@@ -80,4 +80,4 @@ class ResponseTodoList(BaseModel):
 
 @app.get("/hello", tags=["Hello"])
 def get_hello():
-    return {"Message": "Hello FastAPI!"}
+    return {"Message": "Hello TechTrain!"}
