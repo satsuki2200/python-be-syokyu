@@ -78,6 +78,11 @@ class ResponseTodoList(BaseModel):
     updated_at: datetime = Field(title="datetime that the item was updated")
 
 
-@app.get("/hello", tags=["Hello"])
-def get_hello():
-    return {"Message": "Hello TechTrain!"}
+@app.get("/echo", tags=["Hello"])
+def get_hello(message: str, name: str):
+    return {"Message": f"{message} {name}!"}
+
+# @app.get("/plus")
+# def plus(a: int, b: int):
+#     """足し算"""
+#     return (a + b)
