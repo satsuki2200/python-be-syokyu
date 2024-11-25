@@ -82,6 +82,10 @@ class ResponseTodoList(BaseModel):
 def get_hello(message: str, name: str):
     return {"Message": f"{message} {name}!"}
 
+@app.get("/health", tags=["System"])
+def get_health():
+    return {"status": "ok"}
+
 # @app.get("/plus")
 # def plus(a: int, b: int):
 #     """足し算"""
