@@ -122,6 +122,24 @@ async def put_todo_list(todo_list_id: int, data: UpdateTodoList, session: Sessio
         session.refresh(db_item)
         return db_item
 
+@app.delete("/lists/{todo_list_id}", tags=["Todoリスト"])
+async def delete_todo_list(todo_list_id: int, session: Session = Depends(get_db)):
+    try:
+        db_item = session.query(ListModel).filter(ListModel.id == todo_list_id).first()
+        if db_item is None:
+            raise HTTPException(status_code=404, detail='Todo List Not Found')
+        session.delete(db_item)
+        session.commit()
+        session.refresh(db_item)
+    except Exception as e:
+        print(e)
+        error = e
+        session.rollback()
+    finally:
+        if error is not None:
+            return error
+        return {}
+
 # @app.get("/plus")
 # def plus(a: int, b: int):
 #     """足し算"""
