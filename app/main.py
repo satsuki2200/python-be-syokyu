@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from app.const import TodoItemStatusCode
@@ -105,6 +105,22 @@ async def post_todo_list(data: NewTodoList, session: Session = Depends(get_db)):
     session.commit()
     session.refresh(new_db_item)
     return new_db_item
+
+@app.put("/lists/{todo_list_id}", response_model=ResponseTodoList, tags=["Todoリスト"])
+async def put_todo_list(todo_list_id: int, data: UpdateTodoList, session: Session = Depends(get_db)):
+    try:
+        db_item = session.query(ListModel).filter(ListModel.id == todo_list_id).first()
+        if db_item is None:
+            # session.rollback()
+            raise HTTPException(status_code=404, detail='Todo List Not Found')
+        db_item.title = data.title
+        db_item.description = data.description
+        session.commit()
+
+
+    finally:
+        session.refresh(db_item)
+        return db_item
 
 # @app.get("/plus")
 # def plus(a: int, b: int):
