@@ -160,7 +160,7 @@ async def post_todo_item(todo_list_id: int, data: NewTodoItem, session: Session 
     return new_db_item
 
 @app.put("/lists/{todo_list_id}/items/{todo_item_id}", response_model=ResponseTodoItem, tags=["Todo項目"])
-def put_todo_item(todo_list_id: int, todo_item_id: int, data: UpdateTodoItem, session: Session = Depends(get_db)):
+async def put_todo_item(todo_list_id: int, todo_item_id: int, data: UpdateTodoItem, session: Session = Depends(get_db)):
     try:
         db_list = session.query(ListModel).filter(ListModel.id == todo_list_id).first()
         if db_list is None:
@@ -185,6 +185,27 @@ def put_todo_item(todo_list_id: int, todo_item_id: int, data: UpdateTodoItem, se
     finally:
         session.refresh(db_item)
         return db_item
+
+@app.delete("/lists/{todo_list_id}/items/{todo_item_id}", tags=["Todo項目"])
+async def delete_todo_item(todo_list_id: int, todo_item_id: int, session: Session = Depends(get_db)):
+    try:
+        db_list = session.query(ListModel).filter(ListModel.id == todo_list_id).first()
+        if db_list is None:
+            raise HTTPException(status_code=404, detail='Todo List Not Found')
+        db_item = session.query(ItemModel).filter(ItemModel.id == todo_item_id , ItemModel.todo_list_id == todo_list_id).first()
+        if db_item is None:
+            raise HTTPException(status_code=404, detail='Todo Item Not Found')
+        session.delete(db_item)
+        session.commit()
+        session.refresh(db_item)
+    except Exception as e:
+        error = e
+        print(e)
+        session.rollback()
+    finally:
+        if error is not None:
+            return error
+        return {}
 
 # @app.get("/plus")
 # def plus(a: int, b: int):
