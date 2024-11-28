@@ -159,6 +159,33 @@ async def post_todo_item(todo_list_id: int, data: NewTodoItem, session: Session 
     session.refresh(new_db_item)
     return new_db_item
 
+@app.put("/lists/{todo_list_id}/items/{todo_item_id}", response_model=ResponseTodoItem, tags=["Todo項目"])
+def put_todo_item(todo_list_id: int, todo_item_id: int, data: UpdateTodoItem, session: Session = Depends(get_db)):
+    try:
+        db_list = session.query(ListModel).filter(ListModel.id == todo_list_id).first()
+        if db_list is None:
+            raise HTTPException(status_code=404, detail='Todo List Not Found')
+        db_item = session.query(ItemModel).filter(ItemModel.id == todo_item_id , ItemModel.todo_list_id == todo_list_id).first()
+        if db_item is None:
+            raise HTTPException(status_code=404, detail='Todo Item Not Found')
+        
+        db_item.title = data.title
+        db_item.description = data.description
+        db_item.due_at = data.due_at
+        if data.complete is False:
+            db_item.status_code = TodoItemStatusCode.NOT_COMPLETED.value
+        elif data.complete is True:
+            db_item.status_code = TodoItemStatusCode.COMPLETED.value
+
+        session.commit()
+
+    except Exception as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.refresh(db_item)
+        return db_item
+
 # @app.get("/plus")
 # def plus(a: int, b: int):
 #     """足し算"""
