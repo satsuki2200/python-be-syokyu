@@ -145,6 +145,20 @@ def get_todo_item(todo_list_id: int, todo_item_id: int, session: Session = Depen
     db_item = session.query(ItemModel).filter(ItemModel.id == todo_item_id , ItemModel.todo_list_id == todo_list_id).first()
     return db_item
 
+@app.post("/lists/{todo_list_id}/items", response_model=ResponseTodoItem, tags={"Todo項目"})
+async def post_todo_item(todo_list_id: int, data: NewTodoItem, session: Session = Depends(get_db)):
+    new_db_item = ItemModel(
+        todo_list_id = todo_list_id,
+        title = data.title,
+        description = data.description,
+        status_code = TodoItemStatusCode.NOT_COMPLETED.value,
+        due_at = data.due_at,
+    )
+    session.add(new_db_item)
+    session.commit()
+    session.refresh(new_db_item)
+    return new_db_item
+
 # @app.get("/plus")
 # def plus(a: int, b: int):
 #     """足し算"""
