@@ -12,8 +12,9 @@ router = APIRouter(
     tags=["Todo項目"]
 )
 
-# テストを通すために実装
 @router.get("/")
+def get_todo_items(todo_list_id: int, session: Session = Depends(get_db)):
+    return item_crud.get_todo_items(session, todo_list_id)
 
 @router.get("/{todo_item_id}")
 def get_todo_item(todo_list_id: int, todo_item_id: int, session: Session = Depends(get_db)):

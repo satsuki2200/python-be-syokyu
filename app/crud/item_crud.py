@@ -11,6 +11,10 @@ from ..schemas.item_schema import UpdateTodoItem
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
+def get_todo_items(db: Session, todo_list_id: int):
+    db_items = db.query(ItemModel).filter(ItemModel.todo_list_id == todo_list_id).all()
+    return db_items
+
 def get_todo_item(db:Session, todo_list_id: int, todo_item_id: int):
     db_item = db.query(ItemModel).filter(ItemModel.id == todo_item_id , ItemModel.todo_list_id == todo_list_id).first()
     return db_item
