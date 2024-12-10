@@ -13,8 +13,8 @@ router = APIRouter(
 )
 
 @router.get("/")
-def get_todo_lists(session: Session = Depends(get_db)):
-    return list_crud.get_todo_lists(session)
+def get_todo_lists(page: int, per_page: int, session: Session = Depends(get_db)):
+    return list_crud.get_todo_lists(session, page, per_page)
 
 @router.get("/{todo_list_id}")
 async def get_todo_list(todo_list_id: int, session: Session = Depends(get_db)):

@@ -11,8 +11,9 @@ from ..schemas.item_schema import UpdateTodoItem
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-def get_todo_items(db: Session, todo_list_id: int):
-    db_items = db.query(ItemModel).filter(ItemModel.todo_list_id == todo_list_id).all()
+def get_todo_items(db: Session, todo_list_id: int, page: int, per_page: int):
+    db_items = db.query(ItemModel).filter(ItemModel.todo_list_id == todo_list_id).offset((page - 1) * per_page).limit(per_page).all()
+    # データが0件の場合は、空の配列を返却する。
     return db_items
 
 def get_todo_item(db:Session, todo_list_id: int, todo_item_id: int):

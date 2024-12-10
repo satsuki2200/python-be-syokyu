@@ -6,8 +6,9 @@ from ..schemas.list_schema import UpdateTodoList
 
 from sqlalchemy.orm import Session
 
-def get_todo_lists(db: Session):
-    db_lists = db.query(ListModel).all()
+def get_todo_lists(db: Session, page: int, per_page: int):
+    db_lists = db.query(ListModel).offset((page - 1) * per_page).limit(per_page).all()
+    # データが0件の場合は、空の配列を返却する。
     return db_lists
 
 def get_todo_list(db: Session, todo_list_id: int):
