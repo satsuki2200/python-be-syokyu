@@ -30,7 +30,8 @@ async def post_todo_item(todo_list_id: int, data: NewTodoItem, session: Session 
     db_list = list_crud.get_todo_list(session, todo_list_id)
     if db_list is None:
         raise HTTPException(status_code=404, detail='Todo List Not Found')
-    db_item = item_crud.post_todo_item(session, todo_list_id, data)
+    
+    db_item = item_crud.create_todo_item(session, todo_list_id, data)
     return db_item
 
 @router.put("/{todo_item_id}", response_model=ResponseTodoItem)

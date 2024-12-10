@@ -20,7 +20,7 @@ def get_todo_item(db:Session, todo_list_id: int, todo_item_id: int):
     db_item = db.query(ItemModel).filter(ItemModel.id == todo_item_id , ItemModel.todo_list_id == todo_list_id).first()
     return db_item
 
-def post_todo_item(db: Session, todo_list_id: int, data: NewTodoItem):
+def create_todo_item(db: Session, todo_list_id: int, data: NewTodoItem):
     new_db_item = ItemModel(
         todo_list_id = todo_list_id,
         title = data.title,

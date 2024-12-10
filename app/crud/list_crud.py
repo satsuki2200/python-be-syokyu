@@ -12,15 +12,8 @@ def get_todo_lists(db: Session, page: int, per_page: int):
     return db_lists
 
 def get_todo_list(db: Session, todo_list_id: int):
-    try:
-        db_list = db.query(ListModel).filter(ListModel.id == todo_list_id).first()
-        if not db_list:
-            raise HTTPException(status_code=404, detail='Todo List Not Found')
-        return db_list
-
-    except Exception as e:
-        db.rollback()
-        raise e
+    db_list = db.query(ListModel).filter(ListModel.id == todo_list_id).first()
+    return db_list
 
 def create_todo_list(db: Session, data: NewTodoList):
     new_db_list = ListModel(
@@ -35,7 +28,7 @@ def create_todo_list(db: Session, data: NewTodoList):
 def update_todo_list(db: Session, todo_list_id: int, update_todo_list: UpdateTodoList):
     try:
         db_item = db.query(ListModel).filter(ListModel.id == todo_list_id).first()
-        if not db_item:
+        if db_item is None:
             raise HTTPException(status_code=404, detail='Todo List Not Found')
         db_item.title = update_todo_list.title
         db_item.description = update_todo_list.description
@@ -51,7 +44,7 @@ def update_todo_list(db: Session, todo_list_id: int, update_todo_list: UpdateTod
 async def delete_todo_list(db: Session, todo_list_id: int):
     try:
         db_list = db.query(ListModel).filter(ListModel.id == todo_list_id).first()
-        if not db_list:
+        if db_list is None:
             raise HTTPException(status_code=404, detail='Todo List Not Found')
         db.delete(db_list)
         db.commit()
