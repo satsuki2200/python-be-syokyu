@@ -5,7 +5,6 @@ services:
     build:
       context: ./infra/docker/db
       dockerfile: Dockerfile
-    image: mysql:8
     container_name: "python-be-syokyu-db"
     hostname: db
     environment:
