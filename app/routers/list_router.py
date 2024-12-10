@@ -28,8 +28,6 @@ async def post_todo_list(data: NewTodoList, session: Session = Depends(get_db)):
 async def put_todo_list(todo_list_id: int, data: UpdateTodoList, session: Session = Depends(get_db)):
     return list_crud.update_todo_list(session, todo_list_id, data)
 
-# 404はうまくいった 200がおかしい
-# 200が想定されるとき、500が返ってくるけど、リストの削除はされてる
 @router.delete("/{todo_list_id}")
 async def delete_todo_list(todo_list_id: int, session: Session = Depends(get_db)):
    return await list_crud.delete_todo_list(session, todo_list_id)

@@ -50,15 +50,16 @@ def update_todo_item(db: Session, todo_list_id: int, todo_item_id: int, data: Up
             db_item.status_code = TodoItemStatusCode.COMPLETED.value
 
         db.commit()
+        db.refresh(db_item)
+        return db_item
+    except HTTPException as e:
+        raise e
 
     except Exception as e:
         db.rollback()
-    finally:
-        db.refresh(db_item)
-        return db_item
+        raise e
     
-def delete_todo_item(db: Session, todo_list_id: int, todo_item_id: int):
-    status = None
+async def delete_todo_item(db: Session, todo_list_id: int, todo_item_id: int):
     try:
         db_list = db.query(ListModel).filter(ListModel.id == todo_list_id).first()
         if db_list is None:
@@ -68,10 +69,9 @@ def delete_todo_item(db: Session, todo_list_id: int, todo_item_id: int):
             raise HTTPException(status_code=404, detail='Todo Item Not Found')
         db.delete(db_item)
         db.commit()
-        db.refresh(db_item)
-        status = HTTPException(status_code=200, detail="Success")
+        return {"status": True}
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        status = e
         db.rollback()
-    finally:
-        return HTTPException(status_code=200, detail="Success")
+        raise e
